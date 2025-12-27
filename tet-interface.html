@@ -248,6 +248,29 @@
             font-style: italic;
             color: #8B0000;
         }
+
+        .countdown-lunar {
+            background: linear-gradient(135deg, #8B0000 0%, #c41e3a 100%);
+            color: #ffd700;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            font-size: 1.3em;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            border: 2px solid #ffd700;
+        }
+
+        .countdown-lunar p {
+            margin: 8px 0;
+            font-size: 0.9em;
+        }
+
+        .countdown-lunar .time-large {
+            font-size: 1.4em;
+            color: #ffff00;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
     </style>
 </head>
 <body>
@@ -259,6 +282,11 @@
         <p class="subtitle">Năm Rồng Đỏ Thịnh Vượng</p>
 
         <div class="countdown" id="countdown"></div>
+
+        <div class="countdown-lunar">
+            <p>⏰ Tết Âm Lịch (Năm Rồng)</p>
+            <div class="time-large" id="countdownLunar"></div>
+        </div>
 
         <div class="wishes">
             <p>🎆 Sức khỏe - Hạnh phúc - Thành công 🎆</p>
@@ -352,8 +380,30 @@
             document.getElementById('countdown').textContent = `Còn ${days} ngày ${hours} giờ ${minutes} phút`;
         }
 
+        // Countdown Tết Âm Lịch (29/01/2026)
+        function updateCountdownLunar() {
+            const tetLunar = new Date('2026-01-29').getTime();
+            const now = new Date().getTime();
+            const distance = tetLunar - now;
+
+            if (distance < 0) {
+                document.getElementById('countdownLunar').textContent = '🐉 Chúc mừng Tết! 🐉';
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById('countdownLunar').textContent = `${days} ngày ${hours} giờ ${minutes} phút ${seconds} giây`;
+        }
+
         updateCountdown();
         setInterval(updateCountdown, 1000);
+
+        updateCountdownLunar();
+        setInterval(updateCountdownLunar, 1000);
 
         // Click celebrate
         function celebrateClick() {
