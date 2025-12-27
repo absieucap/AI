@@ -1,0 +1,12 @@
+{
+  "name": "tet-interface-server",
+  "version": "1.0.0",
+  "description": "WebSocket server for Tet interface (lucky money sync)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "ws": "^8.13.0"
+  }
+}

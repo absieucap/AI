@@ -678,14 +678,19 @@
             }
 
             luckyMoneySystem.saveName(senderName);
-            const envelope = luckyMoneySystem.addEnvelope(senderName, envelopeType, content);
-            renderEnvelopes();
             document.getElementById('senderName').value = '';
 
-            if (envelopeType === 'money') {
-                alert(`✨ Bạn đã gửi lì xì tiền ${envelope.amount}k từ ${senderName}!`);
+            // If connected to WS, send to server; server will broadcast back
+            if (wsConnected && ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({ type: 'add', sender: senderName, envelopeType: envelopeType, content: content }));
+                if (envelopeType === 'money') alert(`✨ Bạn đã gửi lì xì tiền ${content ? content + 'k' : 'một mức ngẫu nhiên'} từ ${senderName}! (đã đồng bộ)`);
+                else alert(`💝 Bạn đã gửi câu chúc: "${content}" từ ${senderName}! (đã đồng bộ)`);
             } else {
-                alert(`💝 Bạn đã gửi câu chúc: "${content}" từ ${senderName}!`);
+                const envelope = luckyMoneySystem.addEnvelope(senderName, envelopeType, content);
+                renderEnvelopes();
+                renderHistory();
+                if (envelopeType === 'money') alert(`✨ Bạn đã gửi lì xì tiền ${envelope.amount}k từ ${senderName}! (offline)`);
+                else alert(`💝 Bạn đã gửi câu chúc: "${content}" từ ${senderName}! (offline)`);
             }
         }
 
@@ -743,19 +748,23 @@
                 alert('Vui lòng nhập tên trước khi mở lì xì!');
                 return;
             }
-
-            const envelope = luckyMoneySystem.openEnvelope(id, userName);
-            if (envelope) {
-                createFirework(window.innerWidth / 2, window.innerHeight / 2);
-                if (envelope.type === 'money') {
-                    alert(`🎉 Xin chúc mừng! Bạn nhận được ${envelope.receivedAmount}k từ ${envelope.sender}!`);
-                } else {
-                    alert(`💝 Lời chúc từ ${envelope.sender}:\n"${envelope.receivedWish}"`);
-                }
-                renderEnvelopes();
-                renderHistory();
+            // If connected to WS, ask server to open (server will broadcast result)
+            if (wsConnected && ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({ type: 'open', id: id, openedBy: userName }));
             } else {
-                alert('❌ Bạn không thể mở lì xì này!');
+                const envelope = luckyMoneySystem.openEnvelope(id, userName);
+                if (envelope) {
+                    createFirework(window.innerWidth / 2, window.innerHeight / 2);
+                    if (envelope.type === 'money') {
+                        alert(`🎉 Xin chúc mừng! Bạn nhận được ${envelope.receivedAmount}k từ ${envelope.sender}!`);
+                    } else {
+                        alert(`💝 Lời chúc từ ${envelope.sender}:\n"${envelope.receivedWish}"`);
+                    }
+                    renderEnvelopes();
+                    renderHistory();
+                } else {
+                    alert('❌ Bạn không thể mở lì xì này!');
+                }
             }
         }
 
@@ -832,6 +841,69 @@
         renderEnvelopes();
         renderHistory();
         renderHangingEnvelopes();
+
+        // --- WebSocket sync ---
+        let ws = null;
+        let wsConnected = false;
+
+        function connectWS() {
+            try {
+                const url = 'ws://' + location.hostname + ':8080';
+                ws = new WebSocket(url);
+            } catch (e) {
+                ws = null;
+            }
+
+            if (!ws) return;
+
+            ws.addEventListener('open', () => {
+                wsConnected = true;
+                console.log('Connected to WS server');
+                // announce user
+                const name = luckyMoneySystem.userName || '';
+                ws.send(JSON.stringify({ type: 'join', name }));
+            });
+
+            ws.addEventListener('message', (ev) => {
+                let msg = null;
+                try { msg = JSON.parse(ev.data); } catch (e) { return; }
+
+                if (msg.type === 'init') {
+                    luckyMoneySystem.envelopes = msg.envelopes || [];
+                    luckyMoneySystem.save();
+                    renderEnvelopes();
+                    renderHistory();
+                }
+
+                if (msg.type === 'add') {
+                    const env = msg.envelope; 
+                    // avoid duplicates
+                    if (!luckyMoneySystem.envelopes.find(e => e.id === env.id)) {
+                        luckyMoneySystem.envelopes.push(env);
+                        luckyMoneySystem.save();
+                        renderEnvelopes();
+                        renderHistory();
+                    }
+                }
+
+                if (msg.type === 'open') {
+                    const env = msg.envelope;
+                    const local = luckyMoneySystem.envelopes.find(e => e.id === env.id);
+                    if (local) {
+                        Object.assign(local, env);
+                        luckyMoneySystem.save();
+                        renderEnvelopes();
+                        renderHistory();
+                    }
+                }
+            });
+
+            ws.addEventListener('close', () => { wsConnected = false; console.log('WS disconnected'); setTimeout(connectWS, 3000); });
+            ws.addEventListener('error', () => { wsConnected = false; ws.close && ws.close(); });
+        }
+
+        // Try connect (non-blocking)
+        connectWS();
 
         // Tạo hiệu ứng tuyết
         function createSnowflake() {
