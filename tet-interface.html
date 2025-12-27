@@ -458,11 +458,9 @@
                         <option value="wish">💝 Câu Chúc Tết</option>
                     </select>
 
-                    <div id="moneyOptions" style="display: flex; gap: 10px; flex-wrap: wrap;">
-                        <select id="moneyAmount" style="padding: 10px; border: 2px solid #c41e3a; border-radius: 5px; font-size: 1em;">
-                            <option value="small">💵 Dưới 500k</option>
-                            <option value="large">💵💵 Từ 500k trở lên</option>
-                        </select>
+                    <div id="moneyOptions" style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+                        <input type="number" id="moneyAmountInput" placeholder="Số tiền (k) - Ví dụ 100" min="1" style="padding: 10px; border: 2px solid #c41e3a; border-radius: 5px; font-size: 1em; width: 180px;">
+                        <label style="font-size:0.9em; color:#666;">(Nhập số tiền theo 'k' — ví dụ 100 = 100k)</label>
                     </div>
 
                     <div id="wishOptions" style="display: none; flex-wrap: wrap; gap: 10px;">
@@ -520,11 +518,12 @@
                 let wish = null;
 
                 if (type === 'money') {
-                    const amountType = document.getElementById('moneyAmount').value;
-                    if (amountType === 'small') {
-                        amount = Math.floor(Math.random() * 490) + 10; // 10k - 499k
+                    // If caller provided a numeric content (amount in k), use it. Otherwise fallback to small random.
+                    const provided = parseInt(content);
+                    if (!isNaN(provided) && provided > 0) {
+                        amount = provided;
                     } else {
-                        amount = Math.floor(Math.random() * 8500) + 500; // 500k - 8999k
+                        amount = Math.floor(Math.random() * 490) + 10; // 10k - 499k
                     }
                 } else if (type === 'wish') {
                     wish = content;
@@ -581,7 +580,15 @@
 
             let content = null;
             if (envelopeType === 'money') {
-                content = null;
+                const raw = document.getElementById('moneyAmountInput').value.trim();
+                const num = parseInt(raw);
+                if (isNaN(num) || num <= 0) {
+                    const ok = confirm('Số tiền không hợp lệ. Bạn muốn gửi một mức ngẫu nhiên nhỏ thay thế không?');
+                    if (!ok) return;
+                    content = null;
+                } else {
+                    content = num; // tiền theo đơn vị 'k'
+                }
             } else if (envelopeType === 'wish') {
                 const wishSelect = document.getElementById('wishContent').value;
                 if (!wishSelect) {
