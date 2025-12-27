@@ -848,7 +848,9 @@
 
         function connectWS() {
             try {
-                const url = 'ws://' + location.hostname + ':8080';
+                // Tự động phát hiện protocol (ws hoặc wss tùy theo https)
+                const protocol = location.protocol === 'https:' ? 'wss' : 'ws';
+                const url = protocol + '://' + location.hostname + (location.port ? ':' + location.port : '');
                 ws = new WebSocket(url);
             } catch (e) {
                 ws = null;

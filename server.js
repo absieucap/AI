@@ -1,9 +1,36 @@
 const fs = require('fs');
 const path = require('path');
+const http = require('http');
 const WebSocket = require('ws');
 
+const PORT = process.env.PORT || 8080;
 const DATA_FILE = path.join(__dirname, 'envelopes.json');
-const wss = new WebSocket.Server({ port: 8080 });
+
+// Create HTTP server
+const server = http.createServer((req, res) => {
+  // Serve static files
+  let filePath = path.join(__dirname, req.url === '/' ? 'tet-interface.html' : req.url);
+  
+  fs.readFile(filePath, (err, data) => {
+    if (err) {
+      res.writeHead(404, { 'Content-Type': 'text/plain' });
+      res.end('404 Not Found');
+      return;
+    }
+
+    const ext = path.extname(filePath);
+    let contentType = 'text/html';
+    if (ext === '.js') contentType = 'application/javascript';
+    else if (ext === '.json') contentType = 'application/json';
+    else if (ext === '.css') contentType = 'text/css';
+
+    res.writeHead(200, { 'Content-Type': contentType });
+    res.end(data);
+  });
+});
+
+// Create WebSocket server attached to HTTP server
+const wss = new WebSocket.Server({ server });
 
 // In-memory envelopes store (loaded from file)
 let envelopes = [];
@@ -41,7 +68,10 @@ function broadcast(obj, wsExclude) {
 
 loadEnvelopes();
 
-console.log('WebSocket server listening on ws://0.0.0.0:8080');
+server.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server running on http://0.0.0.0:${PORT}`);
+  console.log(`WebSocket server ready on ws://0.0.0.0:${PORT}`);
+});
 
 wss.on('connection', (ws) => {
   // send current state
