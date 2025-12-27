@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chào Mừng Năm Mới</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #c41e3a 0%, #ffd700 50%, #c41e3a 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+            overflow-y: auto;
+            position: relative;
+            padding: 40px 20px;
+        }
+
+        /* Tuyết rơi animation */
+        .snowflake {
+            position: fixed;
+            top: -10px;
+            color: #fff;
+            font-size: 1.5em;
+            font-family: Arial;
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+            z-index: 0;
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(100vh) rotateZ(360deg);
+            }
+        }
+
+        /* Pháo hoa */
+        .fireworks {
+            position: fixed;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 60px 40px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            z-index: 2;
+            position: relative;
+            animation: slideIn 0.8s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .lantern {
+            display: inline-block;
+            font-size: 80px;
+            margin: 0 20px;
+            animation: swing 3s ease-in-out infinite;
+        }
+
+        .lantern:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+
+        @keyframes swing {
+            0%, 100% {
+                transform: rotate(-5deg);
+            }
+            50% {
+                transform: rotate(5deg);
+            }
+        }
+
+        h1 {
+            color: #c41e3a;
+            font-size: 3.5em;
+            margin: 20px 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            letter-spacing: 3px;
+            animation: bounce 0.6s ease-out;
+        }
+
+        @keyframes bounce {
+            0% {
+                transform: scale(0);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .subtitle {
+            color: #ffd700;
+            font-size: 1.8em;
+            margin-bottom: 30px;
+            font-weight: bold;
+        }
+
+        .wishes {
+            background: linear-gradient(135deg, #c41e3a 0%, #ffd700 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            font-size: 1.2em;
+            line-height: 1.8;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .wishes p {
+            margin: 10px 0;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 30px;
+        }
+
+        button {
+            background: linear-gradient(135deg, #c41e3a 0%, #8B0000 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.1em;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(196, 30, 58, 0.3);
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(196, 30, 58, 0.5);
+        }
+
+        button:active {
+            transform: translateY(-1px);
+        }
+
+        .button-secondary {
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            color: #c41e3a;
+        }
+
+        .decoration {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 30px;
+            font-size: 2em;
+        }
+
+        .decoration span {
+            animation: bounce 1s ease-in-out infinite;
+        }
+
+        .decoration span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .decoration span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        .decoration span:nth-child(4) {
+            animation-delay: 0.6s;
+        }
+
+        .decoration span:nth-child(5) {
+            animation-delay: 0.8s;
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2.5em;
+            }
+
+            .subtitle {
+                font-size: 1.3em;
+            }
+
+            .container {
+                padding: 40px 20px;
+            }
+
+            .lantern {
+                font-size: 50px;
+                margin: 0 10px;
+            }
+
+            button {
+                padding: 12px 24px;
+                font-size: 0.95em;
+            }
+        }
+
+        /* Hiệu ứng bóng */
+        .shadow-text {
+            text-shadow: 3px 3px 0px #ffd700, 6px 6px 0px rgba(196, 30, 58, 0.5);
+        }
+
+        .countdown {
+            margin: 20px 0;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #c41e3a;
+        }
+
+        .lucky-message {
+            background: #fff9e6;
+            padding: 20px;
+            border-left: 5px solid #ffd700;
+            border-radius: 5px;
+            margin: 20px 0;
+            text-align: left;
+            font-style: italic;
+            color: #8B0000;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="lantern">🏮</div>
+        <div class="lantern">🏮</div>
+
+        <h1 class="shadow-text">CHÚC MỪNG NĂM MỚI</h1>
+        <p class="subtitle">Năm Rồng Đỏ Thịnh Vượng</p>
+
+        <div class="countdown" id="countdown"></div>
+
+        <div class="wishes">
+            <p>🎆 Sức khỏe - Hạnh phúc - Thành công 🎆</p>
+            <p>Mong bạn luôn vui tươi, may mắn</p>
+            <p>Thành công rực rỡ trong năm mới!</p>
+        </div>
+
+        <div class="lucky-message">
+            💝 "Nơi có ước mơ, nơi đó có hy vọng. Chúc bạn năm mới tràn đầy cơ hội vàng!"
+        </div>
+
+        <div class="decoration">
+            <span>🎇</span>
+            <span>✨</span>
+            <span>🎆</span>
+            <span>✨</span>
+            <span>🎇</span>
+        </div>
+
+        <div class="buttons">
+            <button onclick="celebrateClick()">🎉 Ăn Tết!</button>
+            <button class="button-secondary" onclick="sendWish()">📮 Gửi Lời Chúc</button>
+            <button onclick="playMusic()">🎵 Phát Nhạc</button>
+        </div>
+    </div>
+
+    <script>
+        // Tạo hiệu ứng tuyết
+        function createSnowflake() {
+            const snowflake = document.createElement('div');
+            snowflake.classList.add('snowflake');
+            snowflake.textContent = ['❄', '✨', '⭐'][Math.floor(Math.random() * 3)];
+            snowflake.style.left = Math.random() * 100 + '%';
+            snowflake.style.animationDuration = (Math.random() * 3 + 5) + 's';
+            snowflake.style.opacity = Math.random() * 0.5 + 0.5;
+            document.body.appendChild(snowflake);
+            setTimeout(() => snowflake.remove(), 8000);
+        }
+
+        // Tạo snowflake mỗi 300ms
+        setInterval(createSnowflake, 300);
+
+        // Pháo hoa
+        function createFirework(x, y) {
+            const colors = ['#c41e3a', '#ffd700', '#ff6347', '#00ff00'];
+            for (let i = 0; i < 30; i++) {
+                const firework = document.createElement('div');
+                firework.classList.add('fireworks');
+                firework.style.left = x + 'px';
+                firework.style.top = y + 'px';
+                firework.style.background = colors[Math.floor(Math.random() * colors.length)];
+                document.body.appendChild(firework);
+
+                const angle = (i / 30) * Math.PI * 2;
+                const velocity = 5 + Math.random() * 5;
+                let vx = Math.cos(angle) * velocity;
+                let vy = Math.sin(angle) * velocity;
+                let x1 = x, y1 = y;
+
+                const interval = setInterval(() => {
+                    x1 += vx;
+                    y1 += vy;
+                    vy += 0.1; // gravity
+                    firework.style.left = x1 + 'px';
+                    firework.style.top = y1 + 'px';
+                    firework.style.opacity = parseFloat(firework.style.opacity || 1) - 0.02;
+
+                    if (parseFloat(firework.style.opacity) <= 0) {
+                        clearInterval(interval);
+                        firework.remove();
+                    }
+                }, 30);
+            }
+        }
+
+        // Countdown
+        function updateCountdown() {
+            const newYear = new Date('2026-01-01').getTime();
+            const now = new Date().getTime();
+            const distance = newYear - now;
+
+            if (distance < 0) {
+                document.getElementById('countdown').textContent = '🎉 Chúc mừng năm mới! 🎉';
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+
+            document.getElementById('countdown').textContent = `Còn ${days} ngày ${hours} giờ ${minutes} phút`;
+        }
+
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+
+        // Click celebrate
+        function celebrateClick() {
+            const rect = event.target.getBoundingClientRect();
+            createFirework(rect.left + rect.width / 2, rect.top + rect.height / 2);
+            // Tạo thêm pháo hoa ngẫu nhiên
+            for (let i = 0; i < 3; i++) {
+                setTimeout(() => {
+                    createFirework(
+                        Math.random() * window.innerWidth,
+                        Math.random() * window.innerHeight
+                    );
+                }, i * 200);
+            }
+        }
+
+        // Gửi lời chúc
+        function sendWish() {
+            const wishes = [
+                '✨ Sức khỏe dồi dào!',
+                '💰 Tài lộc sung túc!',
+                '❤️ Hạnh phúc viên mãn!',
+                '🌟 Thành công rực rỡ!',
+                '👨‍👩‍👧‍👦 Gia đình hạnh phúc!',
+                '🎓 Học tập giỏi!',
+                '💪 Sự nghiệp phát triển!',
+                '🏠 Nhà cửa khang trang!'
+            ];
+            const randomWish = wishes[Math.floor(Math.random() * wishes.length)];
+            alert('Lời chúc được gửi:\n' + randomWish);
+        }
+
+        // Phát nhạc
+        function playMusic() {
+            // Tạo âm thanh đơn giản
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const notes = [262, 294, 330, 349, 392, 440]; // Các nốt nhạc
+
+            let currentNote = 0;
+            const playNote = () => {
+                if (currentNote >= notes.length) return;
+
+                const osc = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+                osc.connect(gain);
+                gain.connect(audioContext.destination);
+
+                osc.frequency.value = notes[currentNote];
+                gain.gain.setValueAtTime(0.1, audioContext.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+
+                osc.start(audioContext.currentTime);
+                osc.stop(audioContext.currentTime + 0.3);
+
+                currentNote++;
+                setTimeout(playNote, 400);
+            };
+
+            playNote();
+            alert('🎵 Đang phát nhạc Tết vui vẻ!');
+        }
+
+        // Pháo hoa ngẫu nhiên mỗi 3 giây
+        setInterval(() => {
+            if (Math.random() > 0.7) {
+                createFirework(
+                    Math.random() * window.innerWidth,
+                    Math.random() * (window.innerHeight / 2)
+                );
+            }
+        }, 3000);
+    </script>
+</body>
+</html>
