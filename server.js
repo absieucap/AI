@@ -1,9 +1,34 @@
+const fs = require('fs');
+const path = require('path');
 const WebSocket = require('ws');
 
+const DATA_FILE = path.join(__dirname, 'envelopes.json');
 const wss = new WebSocket.Server({ port: 8080 });
 
-// In-memory envelopes store
+// In-memory envelopes store (loaded from file)
 let envelopes = [];
+
+function loadEnvelopes() {
+  try {
+    if (fs.existsSync(DATA_FILE)) {
+      const raw = fs.readFileSync(DATA_FILE, 'utf8');
+      envelopes = JSON.parse(raw || '[]');
+      console.log('Loaded envelopes from', DATA_FILE);
+    }
+  } catch (e) {
+    console.error('Failed to load envelopes:', e.message);
+    envelopes = [];
+  }
+}
+
+function saveEnvelopes() {
+  try {
+    fs.writeFileSync(DATA_FILE + '.tmp', JSON.stringify(envelopes, null, 2), 'utf8');
+    fs.renameSync(DATA_FILE + '.tmp', DATA_FILE);
+  } catch (e) {
+    console.error('Failed to save envelopes:', e.message);
+  }
+}
 
 function broadcast(obj, wsExclude) {
   const msg = JSON.stringify(obj);
@@ -13,6 +38,8 @@ function broadcast(obj, wsExclude) {
     }
   });
 }
+
+loadEnvelopes();
 
 console.log('WebSocket server listening on ws://0.0.0.0:8080');
 
@@ -52,6 +79,7 @@ wss.on('connection', (ws) => {
       }
 
       envelopes.push(env);
+      saveEnvelopes();
       broadcast({ type: 'add', envelope: env });
     }
 
@@ -64,6 +92,7 @@ wss.on('connection', (ws) => {
         env.openedBy = receiver;
         if (env.type === 'money') env.receivedAmount = env.amount;
         else env.receivedWish = env.wish;
+        saveEnvelopes();
         broadcast({ type: 'open', envelope: env });
       }
     }
