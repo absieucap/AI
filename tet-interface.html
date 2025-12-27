@@ -272,6 +272,49 @@
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
 
+        /* Trees and hanging envelopes */
+        .trees-row {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            align-items: flex-start;
+            margin: 10px 0 20px 0;
+        }
+
+        .tree {
+            text-align: center;
+            width: 120px;
+        }
+
+        .tree-emoji {
+            font-size: 64px;
+            display: block;
+        }
+
+        .hanging-container {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 8px;
+        }
+
+        .hanging-envelope-small {
+            width: 28px;
+            height: 36px;
+            background: linear-gradient(135deg, #c41e3a 0%, #ff6b6b 100%);
+            border: 1px solid #ffd700;
+            border-radius: 4px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+
+
         /* Lucky Money Tree */
         .lucky-money-section {
             background: linear-gradient(135deg, #f0e68c 0%, #ffeb3b 100%);
@@ -419,35 +462,29 @@
             <div class="time-large" id="countdownLunar"></div>
         </div>
 
-        <div class="wishes">
-            <p>🎆 Sức khỏe - Hạnh phúc - Thành công 🎆</p>
-            <p>Mong bạn luôn vui tươi, may mắn</p>
-            <p>Thành công rực rỡ trong năm mới!</p>
-        </div>
-
-        <div class="lucky-message">
-            💝 "Nơi có ước mơ, nơi đó có hy vọng. Chúc bạn năm mới tràn đầy cơ hội vàng!"
-        </div>
-
-        <div class="decoration">
-            <span>🎇</span>
-            <span>✨</span>
-            <span>🎆</span>
-            <span>✨</span>
-            <span>🎇</span>
-        </div>
-
-        <div class="buttons">
-            <button onclick="celebrateClick()">🎉 Ăn Tết!</button>
-            <button class="button-secondary" onclick="sendWish()">📮 Gửi Lời Chúc</button>
-            <button onclick="playMusic()">🎵 Phát Nhạc</button>
-        </div>
-
-        <!-- Lucky Money Section -->
+        <!-- Lucky Money Trees (placed under countdown) -->
         <div class="lucky-money-section">
-            <h2>🎁 Cây Lì Xì May Mắn 🎁</h2>
-            
-            <div class="money-tree">🌲</div>
+            <h2>🎁 Cây Lì Xì & Cây Mai / Đào 🎁</h2>
+
+            <div class="trees-row">
+                <div class="tree" id="tree-mai">
+                    <span class="tree-emoji">🌸</span>
+                    <div class="hanging-container" id="hanging-mai"></div>
+                    <div style="font-size:0.9em; color:#666; margin-top:6px;">Cây Mai</div>
+                </div>
+
+                <div class="tree" id="tree-generic">
+                    <span class="tree-emoji">🌲</span>
+                    <div class="hanging-container" id="hanging-generic"></div>
+                    <div style="font-size:0.9em; color:#666; margin-top:6px;">Cây Lì Xì</div>
+                </div>
+
+                <div class="tree" id="tree-dao">
+                    <span class="tree-emoji">🌺</span>
+                    <div class="hanging-container" id="hanging-dao"></div>
+                    <div style="font-size:0.9em; color:#666; margin-top:6px;">Cây Đào</div>
+                </div>
+            </div>
 
             <div class="money-actions">
                 <input type="text" id="senderName" placeholder="Tên của bạn" maxlength="20">
@@ -494,6 +531,31 @@
                 <div id="moneyHistory"></div>
             </div>
         </div>
+
+        <div class="wishes">
+            <p>🎆 Sức khỏe - Hạnh phúc - Thành công 🎆</p>
+            <p>Mong bạn luôn vui tươi, may mắn</p>
+            <p>Thành công rực rỡ trong năm mới!</p>
+        </div>
+
+        <div class="lucky-message">
+            💝 "Nơi có ước mơ, nơi đó có hy vọng. Chúc bạn năm mới tràn đầy cơ hội vàng!"
+        </div>
+
+        <div class="decoration">
+            <span>🎇</span>
+            <span>✨</span>
+            <span>🎆</span>
+            <span>✨</span>
+            <span>🎇</span>
+        </div>
+
+        <div class="buttons">
+            <button onclick="celebrateClick()">🎉 Ăn Tết!</button>
+            <button class="button-secondary" onclick="sendWish()">📮 Gửi Lời Chúc</button>
+            <button onclick="playMusic()">🎵 Phát Nhạc</button>
+        </div>
+
     </div>
 
     <script>
@@ -769,6 +831,7 @@
         // Initial render
         renderEnvelopes();
         renderHistory();
+        renderHangingEnvelopes();
 
         // Tạo hiệu ứng tuyết
         function createSnowflake() {
@@ -816,6 +879,23 @@
                     }
                 }, 30);
             }
+        }
+
+        // Render small hanging envelopes on each tree (click opens a random envelope)
+        function renderHangingEnvelopes() {
+            const trees = ['mai', 'generic', 'dao'];
+            trees.forEach(t => {
+                const container = document.getElementById('hanging-' + t);
+                if (!container) return;
+                container.innerHTML = '';
+                for (let i = 0; i < 6; i++) {
+                    const el = document.createElement('div');
+                    el.className = 'hanging-envelope-small';
+                    el.textContent = '🧧';
+                    el.onclick = () => openRandomMoney();
+                    container.appendChild(el);
+                }
+            });
         }
 
         // Countdown
